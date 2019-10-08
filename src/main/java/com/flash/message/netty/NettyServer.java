@@ -13,8 +13,11 @@ import org.springframework.stereotype.Service;
 
 import com.flash.message.config.Repository;
 import com.flash.message.config.YPDao;
+import com.flash.message.config.redis.AppInfoRedis;
+import com.flash.message.config.redis.UserInfoRedis;
 import com.flash.message.rabbitmq.service.RabbitmqService;
 import com.flash.message.tabooword.core.TabooWordChecker;
+import com.flash.message.utils.RedisOperationSets;
 import com.flash.message.utils.es.ResultEsDao;
 
 import io.netty.bootstrap.ServerBootstrap;
@@ -40,11 +43,11 @@ public class NettyServer {
     @Resource
     private RabbitmqService mqservice;
 
-    @Resource(name = "redis_user")
-    private RedisTemplate<String, Object> userRedis;
+    @Resource
+    private UserInfoRedis userRedis;
 
     @Resource(name = "redis_app")
-    private RedisTemplate<String, Object> appRedis;
+    private AppInfoRedis appRedis;
 
     @Resource
     private YPDao ypDao;
