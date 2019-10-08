@@ -16,9 +16,9 @@ public class TabooWord {
     private int id;
     @Column(name = "taboo_word")
     private String tabooWord;
-    @Column(name = "create_time")
+    @Column(name = "created_date")
     private Date createTime;
-    @Column(name = "update_time")
+    @Column(name = "updated_date")
     private Date updateTime;
 
     public int getId() {

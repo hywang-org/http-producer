@@ -141,7 +141,7 @@ public class HttpMessageServerHandler extends ChannelInboundHandlerAdapter {
 			return;
 		} else {
 			// 密码不正确
-			if (!appSecret.equals(body.getString(RedisConsts.APP_SECRET))) {
+			if (!appSecret.equals(body.getString("pswd"))) {
 				JSONObject json = ResultParse.parseErr(StateCode.PWD_ERROR.getCode(), "密码不正确");
 				send(ctx, json.toJSONString(), HttpResponseStatus.FORBIDDEN);
 				return;
@@ -156,6 +156,7 @@ public class HttpMessageServerHandler extends ChannelInboundHandlerAdapter {
 			BeanValidator.check(httpmsg);
 			// 封装请求
 			submit = SwitchObj2Submit.obj2sub(httpmsg, null);
+			LOGGER.info("封装成功");
 			break;
 		case Constant.SENDPCKMSG_URL:
 			HttpPckParams pck = JSONObject.toJavaObject(body, HttpPckParams.class);
@@ -197,17 +198,17 @@ public class HttpMessageServerHandler extends ChannelInboundHandlerAdapter {
 				send(ctx, json.toJSONString(), HttpResponseStatus.FORBIDDEN);
 				return;
 			}
-			
+			LOGGER.info("禁忌此判断");
 			BigDecimal size = new BigDecimal(common.getMsg().length());
 			BigDecimal num = size.divide(new BigDecimal(70), 0, BigDecimal.ROUND_UP);
-			String deduction = loadFileContent("lua/deduction.lua");
-			// 计费逻辑
-			if (appRedis.eval(deduction, Collections.singletonList(appId), num.intValue())) {
-				JSONObject json = ResultParse.parseErr(StateCode.FEE_NOT_ENOUGN.getCode(), "费用不足!");
-				send(ctx, json.toJSONString(), HttpResponseStatus.FORBIDDEN);
-				return;
-			}
-			
+			/*
+			 * String deduction = loadFileContent("lua/deduction.lua"); // 计费逻辑 if
+			 * (appRedis.eval(deduction, Collections.singletonList(appId), num.intValue()))
+			 * { JSONObject json = ResultParse.parseErr(StateCode.FEE_NOT_ENOUGN.getCode(),
+			 * "费用不足!"); send(ctx, json.toJSONString(), HttpResponseStatus.FORBIDDEN);
+			 * return; }
+			 */
+			LOGGER.info("发布消息");
 			mqService.publishMq(body.getString("account"), common);
 			ids.add(common.getOwnMsgId());
 			// 记录发送
@@ -221,8 +222,8 @@ public class HttpMessageServerHandler extends ChannelInboundHandlerAdapter {
 			ypDao.save(order);
 
 			// 短信内容保存到es
-            ResultEsDao esDao = (ResultEsDao) sourceMap.get("esDao");
-            esDao.upsertRersult(common);
+//            ResultEsDao esDao = (ResultEsDao) sourceMap.get("esDao");
+//            esDao.upsertRersult(common);
 		}
 		JSONObject success = ResultParse.parseSuc();
 		success.getJSONObject("msg").put("msgids", ids);

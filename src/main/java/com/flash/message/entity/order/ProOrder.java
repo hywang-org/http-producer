@@ -86,7 +86,7 @@ public class ProOrder {
         this.clientSeqId = clientSeqId;
     }
 
-    @Column(name = "my_seq_id")
+    @Column(name = "own_seq_id")
     public String getMySeqId() {
         return mySeqId;
     }
