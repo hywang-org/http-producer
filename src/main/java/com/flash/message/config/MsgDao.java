@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 @Component
-public class YPDao extends HibernateDao {
+public class MsgDao extends HibernateDao {
 
     @Value("${dataSource.url}")
     private String url;
@@ -27,7 +27,7 @@ public class YPDao extends HibernateDao {
     @Value("${dataSource.show_sql:false}")
     private String show_sql;
 
-    private static final Log LOGGER = LogFactory.getLog(YPDao.class);
+    private static final Log LOGGER = LogFactory.getLog(MsgDao.class);
 
     @PostConstruct
     public void initSessionFactory() {

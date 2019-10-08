@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.springframework.util.CollectionUtils;
 
-import com.flash.message.config.YPDao;
+import com.flash.message.config.MsgDao;
 import com.flash.message.entity.tabooword.TabooWord;
 
 /**
@@ -47,7 +47,7 @@ public class TabooWordChecker {
         return false;
     }
 
-    public static void init(YPDao smsDao) {
+    public static void init(MsgDao smsDao) {
         List<TabooWord> tabooWords = smsDao.find("from TabooWord");
         tree = new Tree();
         if (!CollectionUtils.isEmpty(tabooWords)) {
