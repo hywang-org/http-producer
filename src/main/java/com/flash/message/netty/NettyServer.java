@@ -8,16 +8,14 @@ import javax.annotation.Resource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import com.flash.message.config.MsgDao;
 import com.flash.message.config.Repository;
-import com.flash.message.config.YPDao;
 import com.flash.message.config.redis.AppInfoRedis;
 import com.flash.message.config.redis.UserInfoRedis;
 import com.flash.message.rabbitmq.service.RabbitmqService;
 import com.flash.message.tabooword.core.TabooWordChecker;
-import com.flash.message.utils.RedisOperationSets;
 import com.flash.message.utils.es.ResultEsDao;
 
 import io.netty.bootstrap.ServerBootstrap;
@@ -46,11 +44,11 @@ public class NettyServer {
     @Resource
     private UserInfoRedis userRedis;
 
-    @Resource(name = "redis_app")
+    @Resource
     private AppInfoRedis appRedis;
 
     @Resource
-    private YPDao ypDao;
+    private MsgDao ypDao;
     
     @Resource
     private ResultEsDao esDao;

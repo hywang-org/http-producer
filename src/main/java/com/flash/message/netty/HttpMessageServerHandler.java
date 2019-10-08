@@ -16,14 +16,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.script.DefaultRedisScript;
-import org.springframework.data.redis.core.script.RedisScript;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.flash.message.config.MsgDao;
 import com.flash.message.config.Repository;
-import com.flash.message.config.YPDao;
 import com.flash.message.entity.HttpPckParams;
 import com.flash.message.entity.HttpProducerEntity;
 import com.flash.message.entity.HttpSubmitParams;
@@ -40,6 +37,7 @@ import com.flash.message.utils.RedisOperationSets;
 import com.flash.message.utils.ResultParse;
 import com.flash.message.utils.StateCode;
 import com.flash.message.utils.SwitchObj2Submit;
+import com.flash.message.utils.es.ResultEsDao;
 
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
@@ -108,7 +106,6 @@ public class HttpMessageServerHandler extends ChannelInboundHandlerAdapter {
 		super.channelActive(ctx);
 	}
 
-	@SuppressWarnings("unchecked")
 	private void checkAndPck(ChannelHandlerContext ctx, Object msg) throws IOException, TimeoutException {
 		// 用来判断路径是否正确
 		boolean flag = false;
@@ -135,7 +132,7 @@ public class HttpMessageServerHandler extends ChannelInboundHandlerAdapter {
 		JSONObject body = HttpUtil.getBody(request);
 		RedisOperationSets appRedis =  (RedisOperationSets) sourceMap.get("appRedis");
 		RabbitmqService mqService = (RabbitmqService) sourceMap.get("mqservice");
-		YPDao ypDao = (YPDao) sourceMap.get("ypDao");
+		MsgDao ypDao = (MsgDao) sourceMap.get("ypDao");
 		// 鉴权
 		String appSecret = (String) appRedis.hGetValue(body.getString("account"), RedisConsts.APP_SECRET);
 		if (StringUtils.isEmpty(appSecret)) {
@@ -150,7 +147,6 @@ public class HttpMessageServerHandler extends ChannelInboundHandlerAdapter {
 				return;
 			}
 		}
-
 		// 封装请求
 		List<HttpProducerEntity> submit = new ArrayList<HttpProducerEntity>();
 		switch (path) {
@@ -225,8 +221,8 @@ public class HttpMessageServerHandler extends ChannelInboundHandlerAdapter {
 			ypDao.save(order);
 
 			// 短信内容保存到es
-//            ResultEsDao esDao = (ResultEsDao) sourceMap.get("esDao");
-//            esDao.upsertRersult(common);
+            ResultEsDao esDao = (ResultEsDao) sourceMap.get("esDao");
+            esDao.upsertRersult(common);
 		}
 		JSONObject success = ResultParse.parseSuc();
 		success.getJSONObject("msg").put("msgids", ids);
